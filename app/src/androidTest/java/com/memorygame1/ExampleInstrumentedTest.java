@@ -1,4 +1,4 @@
-package com.memorygame;
+package com.memorygame1;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

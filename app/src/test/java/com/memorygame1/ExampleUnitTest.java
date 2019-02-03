@@ -1,4 +1,4 @@
-package com.memorygame;
+package com.memorygame1;
 
 import org.junit.Test;
 

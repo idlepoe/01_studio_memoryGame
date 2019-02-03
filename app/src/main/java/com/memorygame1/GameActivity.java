@@ -1,5 +1,6 @@
-package com.memorygame;
+package com.memorygame1;
 
+import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.media.AudioManager;
@@ -13,10 +14,18 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Random;
 
 public class GameActivity extends AppCompatActivity implements View.OnClickListener {
+
+    SharedPreferences prefs;
+    SharedPreferences.Editor editor;
+    String dataName = "MyData";
+    String intName = "MyString";
+    int defaultInt =0;
+    int hiScore;
 
     private SoundPool soundPool;
 
@@ -53,10 +62,16 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     int playerScore;
     boolean isResponding;
 
+    boolean waitLastButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
+        prefs = getSharedPreferences(dataName,MODE_PRIVATE);
+        editor = prefs.edit();
+        hiScore = prefs.getInt(intName,defaultInt);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             soundPool = new SoundPool.Builder()
@@ -107,13 +122,17 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         btn4.setOnClickListener(this);
         btnReplay.setOnClickListener(this);
 
+        waitLastButton = false;
+
         myHandler = new Handler() {
+
+            @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                if (playSequence) {
-
-                }
-                block:
+//                if (playSequence) {
+//
+//                }
+//                block:
                 if (playSequence) {
                     btn1.setVisibility(View.VISIBLE);
                     btn2.setVisibility(View.VISIBLE);
@@ -126,29 +145,32 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                             soundPool.play(sample1, 1, 1, 0, 0, 1);
                             break;
                         case 2:
-                            btn1.setVisibility(View.INVISIBLE);
+                            btn2.setVisibility(View.INVISIBLE);
                             soundPool.play(sample2, 1, 1, 0, 0, 1);
                             break;
                         case 3:
-                            btn1.setVisibility(View.INVISIBLE);
+                            btn3.setVisibility(View.INVISIBLE);
                             soundPool.play(sample3, 1, 1, 0, 0, 1);
                             break;
                         case 4:
-                            btn1.setVisibility(View.INVISIBLE);
+                            btn4.setVisibility(View.INVISIBLE);
                             soundPool.play(sample4, 1, 1, 0, 0, 1);
                             break;
                     }
                     elementToPlay++;
 
-                    if (elementToPlay == difficultyLevel) {
+                    if (elementToPlay == difficultyLevel && !waitLastButton) {
+                        waitLastButton = true;
+                    }else if(elementToPlay >= difficultyLevel) {
+                        waitLastButton = false;
                         sequenceFinished();
                     }
                 }
                 myHandler.sendEmptyMessageDelayed(0, 900);
-                myHandler.sendEmptyMessage(0);
+
             }
         };
-
+        myHandler.sendEmptyMessage(0);
 
     }
 
@@ -189,20 +211,27 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             if (sequenceToCopy[playerResponses - 1] == thisElement) {
                 //correct
                 playerScore = playerScore + ((thisElement + 1) * 2);
-                txtScore.setText("Score" + playerScore);
+                txtScore.setText("Score:" + playerScore);
                 if (playerResponses == difficultyLevel) {
                     // got the whole sequence
                     isResponding = false;
                     difficultyLevel++;
+                    txtDifficulty.setText("Level:" + difficultyLevel);
                     playASequence();
                 }
             } else {
                 txtWatchGo.setText("FAILED!");
                 isResponding = false;
+
+                if(playerScore > hiScore){
+                    hiScore = playerScore;
+                    editor.putInt(intName,hiScore);
+                    editor.commit();
+                    Toast.makeText(getApplicationContext(),"New Hi-score",Toast.LENGTH_LONG).show();
+                }
             }
         }
     }
-
 
     @Override
     public void onClick(View v) {
@@ -229,6 +258,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                     playerScore = 0;
                     txtScore.setText("Score:" + playerScore);
                     playASequence();
+                    break;
+                case R.id.btnBack:
+                    super.onBackPressed();
                     break;
             }
         }
