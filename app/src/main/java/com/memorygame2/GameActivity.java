@@ -1,4 +1,4 @@
-package com.memorygame1;
+package com.memorygame2;
 
 import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
@@ -12,6 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +28,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     String intName = "MyString";
     int defaultInt =0;
     int hiScore;
+
+    Animation wobble;
 
     private SoundPool soundPool;
 
@@ -46,6 +50,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     Button btn3;
     Button btn4;
     Button btnReplay;
+    Button btnBack;
 
     // some variable
     int difficultyLevel = 3;
@@ -72,6 +77,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         prefs = getSharedPreferences(dataName,MODE_PRIVATE);
         editor = prefs.edit();
         hiScore = prefs.getInt(intName,defaultInt);
+
+        wobble = AnimationUtils.loadAnimation(this,R.anim.wobble);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             soundPool = new SoundPool.Builder()
@@ -115,12 +122,14 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         btn4 = findViewById(R.id.btn4);
 
         btnReplay = findViewById(R.id.btnReplay);
+        btnBack = findViewById(R.id.btnBack);
 
         btn1.setOnClickListener(this);
         btn2.setOnClickListener(this);
         btn3.setOnClickListener(this);
         btn4.setOnClickListener(this);
         btnReplay.setOnClickListener(this);
+        btnBack.setOnClickListener(this);
 
         waitLastButton = false;
 
@@ -134,26 +143,30 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 //                }
 //                block:
                 if (playSequence) {
-                    btn1.setVisibility(View.VISIBLE);
-                    btn2.setVisibility(View.VISIBLE);
-                    btn3.setVisibility(View.VISIBLE);
-                    btn4.setVisibility(View.VISIBLE);
+//                    btn1.setVisibility(View.VISIBLE);
+//                    btn2.setVisibility(View.VISIBLE);
+//                    btn3.setVisibility(View.VISIBLE);
+//                    btn4.setVisibility(View.VISIBLE);
 
                     switch (sequenceToCopy[elementToPlay]) {
                         case 1:
-                            btn1.setVisibility(View.INVISIBLE);
+//                            btn1.setVisibility(View.INVISIBLE);
+                            btn1.startAnimation(wobble);
                             soundPool.play(sample1, 1, 1, 0, 0, 1);
                             break;
                         case 2:
-                            btn2.setVisibility(View.INVISIBLE);
+//                            btn2.setVisibility(View.INVISIBLE);
+                            btn2.startAnimation(wobble);
                             soundPool.play(sample2, 1, 1, 0, 0, 1);
                             break;
                         case 3:
-                            btn3.setVisibility(View.INVISIBLE);
+//                            btn3.setVisibility(View.INVISIBLE);
+                            btn3.startAnimation(wobble);
                             soundPool.play(sample3, 1, 1, 0, 0, 1);
                             break;
                         case 4:
-                            btn4.setVisibility(View.INVISIBLE);
+//                            btn4.setVisibility(View.INVISIBLE);
+                            btn4.startAnimation(wobble);
                             soundPool.play(sample4, 1, 1, 0, 0, 1);
                             break;
                     }
@@ -196,10 +209,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     public void sequenceFinished() {
         playSequence = false;
 
-        btn1.setVisibility(View.VISIBLE);
-        btn2.setVisibility(View.VISIBLE);
-        btn3.setVisibility(View.VISIBLE);
-        btn4.setVisibility(View.VISIBLE);
+//        btn1.setVisibility(View.VISIBLE);
+//        btn2.setVisibility(View.VISIBLE);
+//        btn3.setVisibility(View.VISIBLE);
+//        btn4.setVisibility(View.VISIBLE);
 
         txtWatchGo.setText("GO!");
         isResponding = true;
