@@ -1,4 +1,4 @@
-package com.memorygame2;
+package com.memorybutton;
 
 import android.content.Intent;
 import android.content.SharedPreferences;

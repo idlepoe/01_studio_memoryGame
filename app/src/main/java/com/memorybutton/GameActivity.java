@@ -1,4 +1,4 @@
-package com.memorygame2;
+package com.memorybutton;
 
 import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;

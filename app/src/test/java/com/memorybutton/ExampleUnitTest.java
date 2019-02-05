@@ -1,4 +1,4 @@
-package com.memorygame2;
+package com.memorybutton;
 
 import org.junit.Test;
 
